@@ -1,6 +1,6 @@
-# Concept3D Athena II Home Assistant Integration
+# Concepts3D Athena II Home Assistant Integration
 
-A custom Home Assistant integration for the Concept3D Athena II resin 3D printer.
+A custom Home Assistant integration for the Concepts3D Athena II resin 3D printer.
 
 ## Features
 
@@ -32,7 +32,7 @@ A custom Home Assistant integration for the Concept3D Athena II resin 3D printer
 
 1. Go to Settings → Devices & Services
 2. Click "+ Add Integration"
-3. Search for "Concept3D Athena II"
+3. Search for "Concepts3D Athena II"
 4. Enter your printer's IP address (e.g., `192.168.0.49`)
 5. Optionally configure the port (default: 80) and scan interval (default: 30 seconds)
 6. Click Submit
@@ -95,8 +95,8 @@ A custom Home Assistant integration for the Concept3D Athena II resin 3D printer
 - WiFi - WiFi network name
 
 **Environmental**
-- VOC Inlet - Volatile organic compounds at inlet (PPM)
-- VOC Outlet - Volatile organic compounds at outlet (PPM)
+- VOC Inlet Air Quality - Air quality at inlet (0-100%, higher is better)
+- VOC Outlet Air Quality - Air quality at outlet (0-100%, higher is better)
 - Pressure - Chamber pressure
 
 **Print Parameters (Analytic)**
@@ -208,7 +208,7 @@ This project is licensed under the MIT License.
 
 ## Credits
 
-- Integration developed for the Concept3D Athena II resin printer
+- Integration developed for the Concepts3D Athena II resin printer
 - API information derived from the [Orion project](https://github.com/Open-Resin-Alliance/Orion)
 
 ## Support

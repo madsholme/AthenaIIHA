@@ -1,6 +1,6 @@
 {
   "domain": "athena2",
-  "name": "Concept3D Athena II",
+  "name": "Concepts3D Athena II",
   "codeowners": ["@madsholme"],
   "config_flow": true,
   "documentation": "https://github.com/madsholme/AthenaIIHA",

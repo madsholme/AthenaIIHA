@@ -114,5 +114,5 @@ FIELD_LOG: Final = "log"
 FIELD_PLAY: Final = "play"
 
 # Device info
-MANUFACTURER: Final = "Concept3D"
+MANUFACTURER: Final = "Concepts3D"
 MODEL: Final = "Athena II"
