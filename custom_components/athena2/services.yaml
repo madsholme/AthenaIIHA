@@ -1,0 +1,42 @@
+# Services for Athena II integration
+# Note: These services are placeholders until the printer's control API endpoints are discovered
+
+pause_print:
+  name: Pause Print
+  description: Pause the current print job
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+
+resume_print:
+  name: Resume Print
+  description: Resume a paused print job
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+
+cancel_print:
+  name: Cancel Print
+  description: Cancel the current print job
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+
+set_auto_shutdown:
+  name: Set Auto Shutdown
+  description: Enable or disable auto shutdown after print completion
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+  fields:
+    enabled:
+      name: Enabled
+      description: Enable auto shutdown
+      required: true
+      example: true
+      selector:
+        boolean:

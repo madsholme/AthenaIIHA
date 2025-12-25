@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Athena II Printer",
+        "description": "Enter your Athena II printer connection details",
+        "data": {
+          "host": "IP Address or Hostname",
+          "port": "Port",
+          "scan_interval": "Scan Interval (seconds)"
+        },
+        "data_description": {
+          "host": "The IP address or hostname of your Athena II printer",
+          "port": "The port number (default: 80)",
+          "scan_interval": "How often to poll the printer for updates (10-300 seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the printer. Please check the IP address and ensure the printer is powered on and connected to the network.",
+      "invalid_data": "The printer returned invalid data. Please ensure this is an Athena II printer.",
+      "unknown": "An unexpected error occurred. Please try again."
+    },
+    "abort": {
+      "already_configured": "This printer is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Athena II Options",
+        "description": "Configure options for your Athena II printer",
+        "data": {
+          "scan_interval": "Scan Interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll the printer for updates (10-300 seconds)"
+        }
+      }
+    }
+  },
+  "services": {
+    "pause_print": {
+      "name": "Pause Print",
+      "description": "Pause the current print job"
+    },
+    "resume_print": {
+      "name": "Resume Print",
+      "description": "Resume a paused print job"
+    },
+    "cancel_print": {
+      "name": "Cancel Print",
+      "description": "Cancel the current print job"
+    },
+    "set_auto_shutdown": {
+      "name": "Set Auto Shutdown",
+      "description": "Enable or disable auto shutdown after print completion",
+      "fields": {
+        "enabled": {
+          "name": "Enabled",
+          "description": "Enable auto shutdown"
+        }
+      }
+    }
+  }
+}
