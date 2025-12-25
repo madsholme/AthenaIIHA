@@ -1,12 +1,12 @@
 {
   "domain": "athena2",
   "name": "Concept3D Athena II",
-  "codeowners": ["@mads"],
+  "codeowners": ["@madsholme"],
   "config_flow": true,
-  "documentation": "https://github.com/yourusername/athena2ha",
+  "documentation": "https://github.com/madsholme/AthenaIIHA",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/yourusername/athena2ha/issues",
+  "issue_tracker": "https://github.com/madsholme/AthenaIIHA/issues",
   "requirements": ["aiohttp>=3.8.0", "Pillow>=9.0.0"],
   "version": "1.0.0"
 }
