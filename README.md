@@ -146,11 +146,17 @@ The following services are defined but require discovering the printer's control
 After initial setup, you can modify these options:
 
 - **Scan Interval**: How often to poll the printer (10-300 seconds)
+- **Camera Frame Rate**: How often to fetch and rotate camera frames (0.1-5 FPS)
+  - **0.1 FPS** = 1 frame every 10 seconds (default)
+  - **1 FPS** = 1 frame per second (smooth)
+  - **5 FPS** = 5 frames per second (near real-time, higher CPU usage)
 
 To change options:
 1. Go to Settings → Devices & Services
 2. Find your Athena II printer
 3. Click "Configure"
+
+**Note**: Higher camera frame rates will use more CPU due to rotating each frame. Start with 1 FPS for smooth viewing, increase to 5 FPS for near-live monitoring.
 
 ## Troubleshooting
 

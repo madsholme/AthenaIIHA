@@ -7,12 +7,14 @@
         "data": {
           "host": "IP Address or Hostname",
           "port": "Port",
-          "scan_interval": "Scan Interval (seconds)"
+          "scan_interval": "Scan Interval (seconds)",
+          "camera_fps": "Camera Frame Rate (FPS)"
         },
         "data_description": {
           "host": "The IP address or hostname of your Athena II printer",
           "port": "The port number (default: 80)",
-          "scan_interval": "How often to poll the printer for updates (10-300 seconds)"
+          "scan_interval": "How often to poll the printer for updates (10-300 seconds)",
+          "camera_fps": "Camera refresh rate (0.1-5 FPS). Higher = smoother but more CPU. 1=default, 5=near real-time"
         }
       }
     },
@@ -31,10 +33,12 @@
         "title": "Athena II Options",
         "description": "Configure options for your Athena II printer",
         "data": {
-          "scan_interval": "Scan Interval (seconds)"
+          "scan_interval": "Scan Interval (seconds)",
+          "camera_fps": "Camera Frame Rate (FPS)"
         },
         "data_description": {
-          "scan_interval": "How often to poll the printer for updates (10-300 seconds)"
+          "scan_interval": "How often to poll the printer for updates (10-300 seconds)",
+          "camera_fps": "Camera refresh rate (0.1-5 FPS). Higher = smoother but more CPU. 1=default, 5=near real-time"
         }
       }
     }

@@ -7,12 +7,16 @@ DOMAIN: Final = "athena2"
 CONF_HOST: Final = "host"
 CONF_PORT: Final = "port"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
+CONF_CAMERA_FPS: Final = "camera_fps"
 
 # Defaults
 DEFAULT_PORT: Final = 80
 DEFAULT_SCAN_INTERVAL: Final = 30
 MIN_SCAN_INTERVAL: Final = 10
 MAX_SCAN_INTERVAL: Final = 300
+DEFAULT_CAMERA_FPS: Final = 1  # 1 frame every 10 seconds
+MIN_CAMERA_FPS: Final = 0.1  # 1 frame every 10 seconds
+MAX_CAMERA_FPS: Final = 5  # 5 frames per second (near real-time)
 
 # Platforms
 PLATFORMS: Final = ["sensor", "binary_sensor", "camera"]

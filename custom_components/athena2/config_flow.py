@@ -16,12 +16,16 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
+    CONF_CAMERA_FPS,
     CONF_SCAN_INTERVAL,
+    DEFAULT_CAMERA_FPS,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     ENDPOINT_STATUS,
+    MAX_CAMERA_FPS,
     MAX_SCAN_INTERVAL,
+    MIN_CAMERA_FPS,
     MIN_SCAN_INTERVAL,
 )
 
@@ -107,6 +111,13 @@ class Athena2ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         vol.Coerce(int),
                         vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
                     ),
+                    vol.Optional(
+                        CONF_CAMERA_FPS,
+                        default=DEFAULT_CAMERA_FPS,
+                    ): vol.All(
+                        vol.Coerce(float),
+                        vol.Range(min=MIN_CAMERA_FPS, max=MAX_CAMERA_FPS),
+                    ),
                 }
             ),
             errors=errors,
@@ -150,6 +161,18 @@ class Athena2OptionsFlowHandler(config_entries.OptionsFlow):
                     ): vol.All(
                         vol.Coerce(int),
                         vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+                    ),
+                    vol.Optional(
+                        CONF_CAMERA_FPS,
+                        default=self.config_entry.options.get(
+                            CONF_CAMERA_FPS,
+                            self.config_entry.data.get(
+                                CONF_CAMERA_FPS, DEFAULT_CAMERA_FPS
+                            ),
+                        ),
+                    ): vol.All(
+                        vol.Coerce(float),
+                        vol.Range(min=MIN_CAMERA_FPS, max=MAX_CAMERA_FPS),
                     ),
                 }
             ),

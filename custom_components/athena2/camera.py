@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import datetime
 import io
 import logging
 
@@ -16,6 +17,8 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
+    CONF_CAMERA_FPS,
+    DEFAULT_CAMERA_FPS,
     DOMAIN,
     ENDPOINT_CAMERA,
     MANUFACTURER,
@@ -34,7 +37,13 @@ async def async_setup_entry(
     coordinator = hass.data[DOMAIN][entry.entry_id]
     session = async_get_clientsession(hass)
 
-    async_add_entities([Athena2Camera(coordinator, entry, session)])
+    # Get camera FPS from options or config
+    camera_fps = entry.options.get(
+        CONF_CAMERA_FPS,
+        entry.data.get(CONF_CAMERA_FPS, DEFAULT_CAMERA_FPS),
+    )
+
+    async_add_entities([Athena2Camera(coordinator, entry, session, camera_fps)])
 
 
 class Athena2Camera(Camera):
@@ -48,11 +57,16 @@ class Athena2Camera(Camera):
         coordinator,
         entry: ConfigEntry,
         session: aiohttp.ClientSession,
+        camera_fps: float,
     ) -> None:
         """Initialize the camera."""
         super().__init__()
         self._coordinator = coordinator
         self._session = session
+        self._camera_fps = camera_fps
+        self._frame_interval = 1.0 / camera_fps  # Time between frames in seconds
+        self._last_frame_time = 0
+        self._last_image = None
         self._attr_unique_id = f"{entry.entry_id}_camera"
         self._stream_url = f"http://{coordinator.host}:{coordinator.port}{ENDPOINT_CAMERA}"
         self._attr_device_info = {
@@ -62,11 +76,32 @@ class Athena2Camera(Camera):
             "model": MODEL,
             "sw_version": coordinator.data.get("Version") if coordinator.data else None,
         }
+        self._attr_frame_interval = self._frame_interval
+
+        _LOGGER.info(
+            "Camera initialized with %.1f FPS (frame every %.1f seconds)",
+            camera_fps,
+            self._frame_interval,
+        )
 
     async def async_camera_image(
         self, width: int | None = None, height: int | None = None
     ) -> bytes | None:
-        """Return a rotated camera image."""
+        """Return a rotated camera image with rate limiting."""
+        current_time = datetime.now().timestamp()
+
+        # Check if enough time has passed since last frame
+        time_since_last_frame = current_time - self._last_frame_time
+
+        if time_since_last_frame < self._frame_interval and self._last_image is not None:
+            # Return cached image if we're fetching too fast
+            _LOGGER.debug(
+                "Returning cached image (%.2fs since last fetch, interval is %.2fs)",
+                time_since_last_frame,
+                self._frame_interval,
+            )
+            return self._last_image
+
         try:
             async with async_timeout.timeout(15):
                 response = await self._session.get(self._stream_url)
@@ -77,7 +112,7 @@ class Athena2Camera(Camera):
 
                 if not image_data:
                     _LOGGER.warning("No image data extracted from MJPEG stream")
-                    return None
+                    return self._last_image  # Return cached image on failure
 
                 _LOGGER.debug("Processing JPEG image of %d bytes", len(image_data))
 
@@ -88,17 +123,23 @@ class Athena2Camera(Camera):
                 # Convert back to bytes
                 output = io.BytesIO()
                 rotated.save(output, format="JPEG", quality=85)
-                return output.getvalue()
+                rotated_bytes = output.getvalue()
+
+                # Cache the image and timestamp
+                self._last_image = rotated_bytes
+                self._last_frame_time = current_time
+
+                return rotated_bytes
 
         except asyncio.TimeoutError:
             _LOGGER.error("Timeout getting camera image from %s", self._stream_url)
-            return None
+            return self._last_image  # Return cached image on timeout
         except aiohttp.ClientError as err:
             _LOGGER.error("Error getting camera image: %s", err)
-            return None
+            return self._last_image
         except Exception as err:  # pylint: disable=broad-except
             _LOGGER.error("Unexpected error processing camera image: %s", err)
-            return None
+            return self._last_image
 
     async def _extract_mjpeg_frame(self, response: aiohttp.ClientResponse) -> bytes | None:
         """Extract a single frame from MJPEG stream."""
