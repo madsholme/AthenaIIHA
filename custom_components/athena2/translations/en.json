@@ -46,25 +46,43 @@
   "services": {
     "pause_print": {
       "name": "Pause Print",
-      "description": "Pause the current print job"
+      "description": "Pause the current print job. Only works when a print is actively running."
     },
     "resume_print": {
       "name": "Resume Print",
-      "description": "Resume a paused print job"
+      "description": "Resume a paused print job. Only works when a print is paused."
     },
     "cancel_print": {
       "name": "Cancel Print",
-      "description": "Cancel the current print job"
+      "description": "Cancel the current print job. The printer will complete the current layer before stopping."
     },
     "set_auto_shutdown": {
       "name": "Set Auto Shutdown",
-      "description": "Enable or disable auto shutdown after print completion",
+      "description": "Enable or disable automatic printer shutdown after print completion.",
       "fields": {
         "enabled": {
           "name": "Enabled",
           "description": "Enable auto shutdown"
         }
       }
+    },
+    "start_print": {
+      "name": "Start Print",
+      "description": "Start a print job by plate ID. WARNING - Ensure the printer is ready before starting.",
+      "fields": {
+        "plate_id": {
+          "name": "Plate ID",
+          "description": "The ID of the plate/job to print"
+        }
+      }
+    },
+    "shutdown": {
+      "name": "Shutdown Printer",
+      "description": "Shut down the printer system. WARNING - This will power off the entire printer!"
+    },
+    "reboot": {
+      "name": "Reboot Printer",
+      "description": "Reboot the printer system. WARNING - This will restart the entire printer!"
     }
   }
 }

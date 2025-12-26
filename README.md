@@ -132,14 +132,71 @@ A custom Home Assistant integration for the Concepts3D Athena II resin 3D printe
 
 ## Services
 
-The following services are defined but require discovering the printer's control API endpoints:
+The integration provides the following services to control your printer:
 
-- `athena2.pause_print` - Pause the current print job
-- `athena2.resume_print` - Resume a paused print job
-- `athena2.cancel_print` - Cancel the current print job
-- `athena2.set_auto_shutdown` - Enable/disable auto shutdown
+### Print Control Services
 
-**Note**: Service implementations are placeholders until the control API is fully documented.
+- **`athena2.pause_print`** - Pause the current print job
+  - Only works when a print is actively running
+  - Target: Any Athena II sensor entity
+
+- **`athena2.resume_print`** - Resume a paused print job
+  - Only works when a print is paused
+  - Target: Any Athena II sensor entity
+
+- **`athena2.cancel_print`** - Cancel the current print job
+  - The printer will complete the current layer before stopping (safe stop)
+  - Target: Any Athena II sensor entity
+
+- **`athena2.set_auto_shutdown`** - Enable or disable automatic shutdown after print completion
+  - Parameters:
+    - `enabled` (boolean, required): True to enable, False to disable
+  - Target: Any Athena II sensor entity
+
+- **`athena2.start_print`** - Start a print job by plate ID
+  - **WARNING**: Ensure the printer is ready (resin filled, plate installed) before starting
+  - Parameters:
+    - `plate_id` (text, required): The ID of the plate/job to print
+  - Target: Any Athena II sensor entity
+  - Note: To find available plate IDs, check your printer's web interface at `http://[PRINTER_IP]/plates`
+
+### System Control Services
+
+- **`athena2.shutdown`** - Shut down the entire printer system
+  - **WARNING**: This will power off the printer completely
+  - Use with caution
+  - Target: Any Athena II sensor entity
+
+- **`athena2.reboot`** - Reboot the entire printer system
+  - **WARNING**: This will restart the printer completely
+  - Use with caution
+  - Target: Any Athena II sensor entity
+
+### Using Services
+
+Services can be called from:
+1. **Developer Tools → Services** in Home Assistant
+2. **Automations** - trigger printer actions based on conditions
+3. **Scripts** - create reusable printer control sequences
+4. **Dashboards** - add buttons to control printer from UI
+
+Example automation:
+```yaml
+automation:
+  - alias: "Pause print if door opens"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.athena_ii_192_168_0_49_covered
+        to: "off"  # Door opened
+    condition:
+      - condition: state
+        entity_id: binary_sensor.athena_ii_192_168_0_49_printing
+        state: "on"
+    action:
+      - service: athena2.pause_print
+        target:
+          entity_id: sensor.athena_ii_192_168_0_49_status
+```
 
 ## Configuration Options
 
@@ -223,6 +280,53 @@ This project is licensed under the MIT License.
 
 - Integration developed for the Concepts3D Athena II resin printer
 - API information derived from the [Orion project](https://github.com/Open-Resin-Alliance/Orion)
+
+## Historical Sensor Data
+
+Home Assistant automatically records sensor history using the built-in [Recorder](https://www.home-assistant.io/integrations/recorder/) integration. All Athena II sensor data is tracked by default.
+
+### Viewing Historical Data
+
+1. **History Panel** - Click on any sensor to view its history graph
+2. **Logbook** - View all state changes over time
+3. **Energy Dashboard** - Track long-term trends (for supported sensors)
+4. **Custom Cards** - Use history graphs in Lovelace dashboards
+
+### Long-term Statistics
+
+The following sensors provide long-term statistics that are kept indefinitely:
+- Lamp Hours
+- Total Layers (calculated from prints)
+- Print Progress tracking
+- System uptime
+- All temperature sensors
+
+### Database Retention
+
+By default, Home Assistant keeps 10 days of detailed history. To extend this:
+
+```yaml
+# configuration.yaml
+recorder:
+  purge_keep_days: 30  # Keep 30 days of history
+  db_url: "postgresql://user:password@localhost/homeassistant"  # For better performance
+```
+
+## Future Features (Planned)
+
+The following features are planned for future releases:
+
+### Camera LED Control
+- Switch to control camera LED on/off
+- Requires discovery of G-code execution endpoint
+
+### Print History from Database
+- Sensors showing last print details
+- Total print count
+- Print success/failure statistics
+- Access to SQLite database `/home/pi/printer/db/tracking.db`
+
+These features require additional investigation and will be added in future updates.
 
 ## Support
 

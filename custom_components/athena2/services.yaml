@@ -1,9 +1,8 @@
 # Services for Athena II integration
-# Note: These services are placeholders until the printer's control API endpoints are discovered
 
 pause_print:
   name: Pause Print
-  description: Pause the current print job
+  description: Pause the current print job. Only works when a print is actively running.
   target:
     entity:
       integration: athena2
@@ -11,7 +10,7 @@ pause_print:
 
 resume_print:
   name: Resume Print
-  description: Resume a paused print job
+  description: Resume a paused print job. Only works when a print is paused.
   target:
     entity:
       integration: athena2
@@ -19,7 +18,7 @@ resume_print:
 
 cancel_print:
   name: Cancel Print
-  description: Cancel the current print job
+  description: Cancel the current print job. The printer will complete the current layer before stopping.
   target:
     entity:
       integration: athena2
@@ -27,7 +26,7 @@ cancel_print:
 
 set_auto_shutdown:
   name: Set Auto Shutdown
-  description: Enable or disable auto shutdown after print completion
+  description: Enable or disable automatic printer shutdown after print completion.
   target:
     entity:
       integration: athena2
@@ -40,3 +39,35 @@ set_auto_shutdown:
       example: true
       selector:
         boolean:
+
+start_print:
+  name: Start Print
+  description: Start a print job by plate ID. WARNING - Ensure the printer is ready before starting.
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+  fields:
+    plate_id:
+      name: Plate ID
+      description: The ID of the plate/job to print
+      required: true
+      example: "1"
+      selector:
+        text:
+
+shutdown:
+  name: Shutdown Printer
+  description: Shut down the printer system. WARNING - This will power off the entire printer!
+  target:
+    entity:
+      integration: athena2
+      domain: sensor
+
+reboot:
+  name: Reboot Printer
+  description: Reboot the printer system. WARNING - This will restart the entire printer!
+  target:
+    entity:
+      integration: athena2
+      domain: sensor

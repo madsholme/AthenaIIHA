@@ -26,11 +26,22 @@ SERVICE_PAUSE_PRINT: Final = "pause_print"
 SERVICE_RESUME_PRINT: Final = "resume_print"
 SERVICE_CANCEL_PRINT: Final = "cancel_print"
 SERVICE_SET_AUTO_SHUTDOWN: Final = "set_auto_shutdown"
+SERVICE_START_PRINT: Final = "start_print"
+SERVICE_SHUTDOWN: Final = "shutdown"
+SERVICE_REBOOT: Final = "reboot"
 
 # API Endpoints
 ENDPOINT_STATUS: Final = "/status"
 ENDPOINT_CAMERA: Final = "/athena-camera/stream"
 ENDPOINT_ANALYTIC_VALUE: Final = "/analytic/value"
+ENDPOINT_PAUSE: Final = "/printer/pause"
+ENDPOINT_UNPAUSE: Final = "/printer/unpause"
+ENDPOINT_STOP: Final = "/printer/stop"
+ENDPOINT_AUTO_SHUTDOWN_ENABLE: Final = "/printer/auto-shutdown/enable"
+ENDPOINT_AUTO_SHUTDOWN_DISABLE: Final = "/printer/auto-shutdown/disable"
+ENDPOINT_START_PRINT: Final = "/printer/start/"
+ENDPOINT_SHUTDOWN: Final = "/printer/off"
+ENDPOINT_REBOOT: Final = "/printer/restart"
 
 # Analytic metric IDs mapping to keys
 ANALYTIC_METRICS: Final = {
