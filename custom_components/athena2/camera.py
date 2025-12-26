@@ -68,7 +68,7 @@ class Athena2Camera(Camera):
     ) -> bytes | None:
         """Return a rotated camera image."""
         try:
-            async with async_timeout.timeout(10):
+            async with async_timeout.timeout(15):
                 response = await self._session.get(self._stream_url)
                 response.raise_for_status()
 
@@ -78,6 +78,8 @@ class Athena2Camera(Camera):
                 if not image_data:
                     _LOGGER.warning("No image data extracted from MJPEG stream")
                     return None
+
+                _LOGGER.debug("Processing JPEG image of %d bytes", len(image_data))
 
                 # Rotate image 90° clockwise
                 image = Image.open(io.BytesIO(image_data))
@@ -101,33 +103,49 @@ class Athena2Camera(Camera):
     async def _extract_mjpeg_frame(self, response: aiohttp.ClientResponse) -> bytes | None:
         """Extract a single frame from MJPEG stream."""
         try:
-            # MJPEG streams use multipart/x-mixed-replace with boundary markers
-            boundary = None
-            content_type = response.headers.get("Content-Type", "")
-
-            # Extract boundary from content type
-            if "boundary=" in content_type:
-                boundary = content_type.split("boundary=")[-1].strip()
-                boundary = f"--{boundary}".encode()
-            else:
-                # Common default boundary
-                boundary = b"--myboundary"
-
             # Read stream until we find a complete JPEG frame
             buffer = b""
-            async for chunk in response.content.iter_chunked(1024):
+            content_length = None
+            in_jpeg = False
+
+            async for chunk in response.content.iter_chunked(4096):
                 buffer += chunk
 
-                # Look for JPEG start (FFD8) and end (FFD9) markers
-                jpeg_start = buffer.find(b"\xff\xd8")
-                if jpeg_start != -1:
-                    jpeg_end = buffer.find(b"\xff\xd9", jpeg_start)
+                # Look for Content-Length header in stream
+                if not in_jpeg and b"Content-Length:" in buffer:
+                    try:
+                        length_line = buffer.split(b"Content-Length:")[1].split(b"\r\n")[0]
+                        content_length = int(length_line.strip())
+                    except (ValueError, IndexError):
+                        pass
+
+                # Look for JPEG start (FFD8) marker
+                if not in_jpeg:
+                    jpeg_start = buffer.find(b"\xff\xd8")
+                    if jpeg_start != -1:
+                        in_jpeg = True
+                        # Keep only from JPEG start
+                        buffer = buffer[jpeg_start:]
+
+                # Look for JPEG end (FFD9) marker
+                if in_jpeg:
+                    jpeg_end = buffer.find(b"\xff\xd9")
                     if jpeg_end != -1:
-                        # Extract complete JPEG frame
-                        return buffer[jpeg_start:jpeg_end + 2]
+                        # Extract complete JPEG frame (including FFD9 marker)
+                        jpeg_data = buffer[:jpeg_end + 2]
+                        _LOGGER.debug("Extracted JPEG frame of %d bytes", len(jpeg_data))
+                        return jpeg_data
+
+                # Safety check: if we have content length and buffer is big enough
+                if content_length and len(buffer) >= content_length + 1000:
+                    # Should have found end marker by now, try to extract what we have
+                    jpeg_end = buffer.find(b"\xff\xd9")
+                    if jpeg_end != -1:
+                        return buffer[:jpeg_end + 2]
 
                 # Prevent buffer from growing too large
-                if len(buffer) > 1024 * 1024:  # 1MB limit
+                if len(buffer) > 2 * 1024 * 1024:  # 2MB limit
+                    _LOGGER.warning("Buffer exceeded 2MB without finding complete frame")
                     break
 
             return None

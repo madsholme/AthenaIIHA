@@ -1,5 +1,12 @@
 # Concepts3D Athena II Home Assistant Integration
 
+<!--
+Uncomment and add your logo image to .github/ directory:
+<p align="center">
+  <img src=".github/logo.png" alt="Athena II Logo" width="400"/>
+</p>
+-->
+
 A custom Home Assistant integration for the Concepts3D Athena II resin 3D printer.
 
 ## Features
